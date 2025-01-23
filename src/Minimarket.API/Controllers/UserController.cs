@@ -29,4 +29,15 @@ public class UserController(IUserBLL userBLL) : Controller
     public async Task<IActionResult> UserList(string role, string seach) =>
         Ok(await userBLL.UserList(role, seach));
 
+    [HttpPost("Login")]
+    public async Task<IActionResult> Login([FromBody] LoginDTO entity) =>
+        Ok(await userBLL.Auth(entity));
+
+    [HttpGet("Profile")]
+    public async Task<IActionResult> Profile()
+    {
+        var context = HttpContext;
+        return Ok(await userBLL.Profile(context));
+    }
+
 }

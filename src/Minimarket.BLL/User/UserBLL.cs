@@ -1,4 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -68,13 +72,13 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         var dbEntity = await repo.Query(usr => usr.Id == entity.Id).FirstOrDefaultAsync();
         if (dbEntity != null)
         {
-            if (!entity.Name.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(entity.Name))
                 dbEntity.Name = entity.Name;
 
-            if (!entity.Email.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(entity.Email))
                 dbEntity.Email = entity.Email;
 
-            if (!entity.Password.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(entity.Password))
             {
                 var existPassword = BCrypt.Net.BCrypt.EnhancedVerify(entity.Password, dbEntity!.Password, BCrypt.Net.HashType.SHA384);
 
@@ -103,12 +107,12 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         seach = seach.ToLower();
         role = role.Trim().ToLower();
 
-        if(role == "na" || role == "all") role = "";
-        if(seach == "na" || seach == "all") seach = "";
-        
+        if (role == "na" || role == "all") role = "";
+        if (seach == "na" || seach == "all") seach = "";
+
         async Task<List<UserProfile>> GetEntities(bool usrRole)
         {
-            return await repo.Query(usr => (usrRole != true || (usr.Role == role)) 
+            return await repo.Query(usr => (usrRole != true || (usr.Role == role))
                 && string
                 .Concat(usr.Name!
                 .ToLower(), usr.Email!
@@ -118,12 +122,71 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         }
 
         var entities = role != "" ? await GetEntities(true) : await GetEntities(false);
-        if (entities.IsNullOrEmpty())
+        if (entities == null || entities.Count == 0)
         {
-           return Result<List<ResponseUserDTO>>.Failure(["Sin resultados"]);
+            return Result<List<ResponseUserDTO>>.Failure(["Sin resultados"]);
         }
 
         List<ResponseUserDTO> resList = mapper.Map<List<ResponseUserDTO>>(entities);
         return Result<List<ResponseUserDTO>>.Success(resList);
+    }
+
+    public async Task<Result<SessionDTO>> Auth(LoginDTO entity)
+    {
+        var usrDB = await repo.Query(u => u.Email == entity.Email).FirstOrDefaultAsync();
+        if (usrDB == null)
+        {
+            return Result<SessionDTO>.Failure(["Correo electronico no registrado"]);
+        }
+
+        if (!BCrypt.Net.BCrypt.EnhancedVerify(entity.Password, usrDB!.Password, BCrypt.Net.HashType.SHA384))
+        {
+            return Result<SessionDTO>.Failure(["Contraseña incorrecta"]);
+        }
+
+        var jwt = config.GetSection("JWT").GetSection("Key").Get<string>();
+        var now = DateTime.UtcNow;
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, entity.Email!),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, EpochTime.GetIntDate(now).ToString(), ClaimValueTypes.Integer64),
+            new Claim("Id", usrDB.Id.ToString())
+            // Podemos guardar el rol aquí.
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt!));
+        var singIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha384);
+        var token = new JwtSecurityToken(
+            null,
+            null,
+            claims,
+            expires: DateTime.Now.AddDays(1),
+            signingCredentials: singIn
+        );
+
+        return Result<SessionDTO>.Success(new SessionDTO
+        {
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            Profile = mapper.Map<ResponseUserDTO>(usrDB)
+        });
+    }
+
+    private static int GetUserByClaims(HttpContext context)
+    {
+        var identity = context.User.Identity as ClaimsIdentity;
+        var id = identity!.Claims.FirstOrDefault(c => c.Type == "Id")?.Value!;
+        return int.Parse(id);
+    }
+
+    public async Task<Result<ResponseUserDTO>> Profile(HttpContext context)
+    {
+        int id = GetUserByClaims(context);
+        var usr = await repo.Query(u => u.Id == id).FirstOrDefaultAsync();
+
+        if (usr == null)
+            return Result<ResponseUserDTO>.Failure(["Id de usuario no encontrado"]);
+
+        return Result<ResponseUserDTO>.Success(mapper.Map<ResponseUserDTO>(usr));
     }
 }

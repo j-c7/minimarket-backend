@@ -7,6 +7,9 @@ using Minimarket.DAL.Repository;
 using Minimarket.DAL.Automapper;
 using Minimarket.BLL.User.Interfaces;
 using Minimarket.BLL.User;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Minimarket.IOC;
 
@@ -32,6 +35,21 @@ public static class MinimarketIOC
         {
             options.AddPolicy(name: "CorsPolicy", app =>
                 app.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+        });
+
+        // JWT
+        service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+            options.SaveToken = true;
+            options.TokenValidationParameters = new()
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(config["JWT:Key"]!)
+                )
+            };
         });
     }
 }

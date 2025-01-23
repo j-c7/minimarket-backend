@@ -1,6 +1,7 @@
 using Minimarket.DTO.User;
 using Minimarket.Entity;
 using Minimarket.DAL;
+using Microsoft.AspNetCore.Http;
 
 namespace Minimarket.BLL.User.Interfaces;
 
@@ -15,4 +16,8 @@ public interface IUserBLL
     Task<Result<ResponseUserDTO>> GetUser(int id);
 
     Task<Result<List<ResponseUserDTO>>> UserList(string role, string seach);
+
+    Task<Result<SessionDTO>> Auth(LoginDTO entity);
+
+    Task<Result<ResponseUserDTO>> Profile(HttpContext context);
 }
