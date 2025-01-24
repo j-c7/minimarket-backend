@@ -12,4 +12,6 @@ public interface IGenericRepo<T> where T : class
     Task<Result<T>> Delete(T entity);
 
     IQueryable<T> Query(Expression<Func<T, bool>>? filter);
+
+    Task SaveChangesAsync();
 }

@@ -10,8 +10,8 @@ using Minimarket.BLL.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Minimarket.BLL.Product.Interfaces;
-using Minimarket.BLL.Product;
+using Minimarket.BLL.Products.Interfaces;
+using Minimarket.BLL.Products;
 
 namespace Minimarket.IOC;
 
@@ -28,6 +28,7 @@ public static class MinimarketIOC
         service.AddTransient(typeof(IGenericRepo<>), typeof(GenericRepo<>));
         service.AddScoped<IUserBLL, UserBLL>();
         service.AddScoped<IProductCategoryBLL, ProductCategoryBLL>();
+        service.AddScoped<IProductBLL, ProductBLL>();
 
         //Automapper
         service.AddAutoMapper(typeof(AutomapperProfile));
@@ -41,7 +42,8 @@ public static class MinimarketIOC
         });
 
         // JWT
-        service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+        service.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+        {
             options.SaveToken = true;
             options.TokenValidationParameters = new()
             {

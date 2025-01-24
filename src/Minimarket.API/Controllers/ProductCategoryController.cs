@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Minimarket.BLL.Product.Interfaces;
+using Minimarket.BLL.Products.Interfaces;
 using Minimarket.DTO.Product;
 
 namespace Minimarket.API.Controllers;

@@ -22,11 +22,21 @@ public class AutomapperProfile : Profile
         CreateMap<ProductCategory, ProductCategoryDTO>();
         CreateMap<ProductCategoryDTO, ProductCategory>();
 
-        //CreateMap<ProductCategory, ProductCategoryResponseDTO>();
-        //CreateMap<ProductCategoryResponseDTO, ProductCategory>();
-
         CreateMap<ProductCategory, EditProductCategoryDTO>();
         CreateMap<EditProductCategoryDTO, ProductCategory>();
+
+        CreateMap<ResProductCategoryDTO, ProductCategory>();
+        CreateMap<ProductCategory, ResProductCategoryDTO>();
+
+        // Producto
+        CreateMap<Product, ProductDTO>();
+        CreateMap<ProductDTO, Product>();
+
+        CreateMap<Product, EditProductDTO>();
+        CreateMap<EditProductDTO, Product>();
+
+        CreateMap<Product, ResProductDTO>();
+        CreateMap<ProductCategoryDTO, Product>();
     }
-    
+
 }

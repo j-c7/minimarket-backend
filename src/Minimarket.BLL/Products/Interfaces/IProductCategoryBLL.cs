@@ -1,7 +1,7 @@
 using Minimarket.DTO.Product;
 using Minimarket.Entity;
 
-namespace Minimarket.BLL.Product.Interfaces;
+namespace Minimarket.BLL.Products.Interfaces;
 
 public interface IProductCategoryBLL
 {
@@ -11,7 +11,7 @@ public interface IProductCategoryBLL
 
     Task<Result<ProductCategory>> Edit(EditProductCategoryDTO entity);
 
-    Task<Result<ProductCategory>> GetCategory(int id);
+    Task<Result<ResProductCategoryDTO>> GetCategory(int id);
 
-    Task<Result<List<ProductCategory>>> CategoryList(string seach);
+    Task<Result<List<ResProductCategoryDTO>>> CategoryList(string seach);
 }

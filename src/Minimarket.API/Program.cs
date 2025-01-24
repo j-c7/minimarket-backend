@@ -14,6 +14,12 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddMinimarketIOC(builder.Configuration);
 
+// Esto nos ayuda a evitar el error al incluir los productos en las categorias.
+/*builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);*/
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

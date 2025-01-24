@@ -1,12 +1,11 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using Minimarket.BLL.Product.Interfaces;
+using Minimarket.BLL.Products.Interfaces;
 using Minimarket.DAL.Repository.Interfaces;
 using Minimarket.DTO.Product;
 using Minimarket.Entity;
 
-namespace Minimarket.BLL.Product;
+namespace Minimarket.BLL.Products;
 
 public class ProductCategoryBLL(IGenericRepo<ProductCategory> repo, IMapper mapper) : IProductCategoryBLL
 {
@@ -35,8 +34,7 @@ public class ProductCategoryBLL(IGenericRepo<ProductCategory> repo, IMapper mapp
         if (!deletedCategory.IsSucess)
             return Result<ProductCategory>.Failure(["Imposible borrar categoria"]);
 
-        return Result<ProductCategory>
-            .Success(deletedCategory.Value!);
+        return Result<ProductCategory>.Success(deletedCategory.Value!);
     }
 
     public async Task<Result<ProductCategory>> Edit(EditProductCategoryDTO entity)
@@ -51,35 +49,37 @@ public class ProductCategoryBLL(IGenericRepo<ProductCategory> repo, IMapper mapp
             if (!editedCategory.IsSucess)
                 return Result<ProductCategory>.Failure(editedCategory.Errors);
 
-            return Result<ProductCategory>
-                .Success(mapper.Map<ProductCategory>(editedCategory.Value));
-
+            return Result<ProductCategory>.Success(editedCategory.Value!);
         }
         return Result<ProductCategory>.Failure(["Categoria no encontrada"]);
     }
 
-    public async Task<Result<ProductCategory>> GetCategory(int id)
+    public async Task<Result<ResProductCategoryDTO>> GetCategory(int id)
     {
-        var category = await repo.Query(c => c.Id == id).FirstOrDefaultAsync();
-        return category != null ? Result<ProductCategory>.Success(category)
-           : Result<ProductCategory>.Failure(["Categoria no encontrada"]);
+        var category = await repo.Query(c => c.Id == id)
+            //.Include(p => p.Products) 
+            .FirstOrDefaultAsync();
+        return category != null ? Result<ResProductCategoryDTO>
+            .Success(mapper.Map<ResProductCategoryDTO>(category))
+           : Result<ResProductCategoryDTO>.Failure(["Categoria no encontrada"]);
     }
 
-    public async Task<Result<List<ProductCategory>>> CategoryList(string seach)
+    public async Task<Result<List<ResProductCategoryDTO>>> CategoryList(string seach)
     {
         seach = seach.ToLower();
         if (seach == "na" || seach == "all") seach = "";
-        
-        var categories = await repo.Query(c => 
+
+        var categories = await repo.Query(c =>
         c.Name!
         .ToLower()
         .Contains(seach))
+        //.Include(p => p.Products)
         .ToListAsync();
+
         if (categories == null || categories.Count == 0)
-        {
-            return Result<List<ProductCategory>>.Failure(["Sin resultados"]);
-        }
-        List<ProductCategory> resList = mapper.Map<List<ProductCategory>>(categories);
-        return Result<List<ProductCategory>>.Success(resList);
+            return Result<List<ResProductCategoryDTO>>.Failure(["Sin resultados"]);
+
+        List<ResProductCategoryDTO> resList = mapper.Map<List<ResProductCategoryDTO>>(categories);
+        return Result<List<ResProductCategoryDTO>>.Success(resList);
     }
 }

@@ -126,7 +126,6 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         {
             return Result<List<ResponseUserDTO>>.Failure(["Sin resultados"]);
         }
-
         List<ResponseUserDTO> resList = mapper.Map<List<ResponseUserDTO>>(entities);
         return Result<List<ResponseUserDTO>>.Success(resList);
     }
