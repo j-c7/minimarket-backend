@@ -13,5 +13,5 @@ public interface IProductBLL
 
     Task<Result<ResProductDTO>> GetProduct(int id);
 
-    Task<Result<List<ResProductDTO>>> ProductList(string seach);
+    Task<Result<List<ResProductDTO>>> ProductList(string category, string seach);
 }

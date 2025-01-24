@@ -25,7 +25,7 @@ public class ProductController(IProductBLL productBLL) : Controller
         Ok(await productBLL.GetProduct(id));
 
     [HttpGet("ProductList/{seach:alpha?}")]
-    public async Task<IActionResult> ProductList(string seach) =>
-        Ok(await productBLL.ProductList(seach));
+    public async Task<IActionResult> ProductList(string category="all", string seach="all") =>
+        Ok(await productBLL.ProductList(category, seach));
 
 }

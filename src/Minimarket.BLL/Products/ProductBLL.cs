@@ -92,16 +92,23 @@ public class ProductBLL(IGenericRepo<Product> repo, IGenericRepo<ProductCategory
 
     /// Obtiene todos los productos sin importar la categoría, 
     /// podría mejorarse añadiendo filtro de categoría.
-    public async Task<Result<List<ResProductDTO>>> ProductList(string seach)
+    public async Task<Result<List<ResProductDTO>>> ProductList(string category, string seach)
     {
+        category = category.ToLower();
         seach = seach.ToLower();
+        if (category == "na" || category == "all") category = "";
         if (seach == "na" || seach == "all") seach = "";
 
-        var products = await repo.Query(p =>
-        p.Name!
-        .ToLower()
-        .Contains(seach))
-        .ToListAsync();
+        async Task<List<Product>> GetEntities(bool useCategory)
+        {
+            return await repo.Query(prod =>
+            (useCategory != true || (prod.Category!.Name == category)) &&
+            prod.Name!
+            .ToLower()
+            .Contains(seach))
+            .ToListAsync();
+        }
+        var products = category != "" ? await GetEntities(true) : await GetEntities(false);
         if (products == null || products.Count == 0)
         {
             return Result<List<ResProductDTO>>.Failure(["Sin resultados"]);
