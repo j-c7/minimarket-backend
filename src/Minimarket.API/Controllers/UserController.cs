@@ -39,5 +39,4 @@ public class UserController(IUserBLL userBLL) : Controller
         var context = HttpContext;
         return Ok(await userBLL.Profile(context));
     }
-
 }

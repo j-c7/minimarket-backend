@@ -10,6 +10,8 @@ using Minimarket.BLL.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Minimarket.BLL.Product.Interfaces;
+using Minimarket.BLL.Product;
 
 namespace Minimarket.IOC;
 
@@ -25,6 +27,7 @@ public static class MinimarketIOC
         // Inyección de dependencias.
         service.AddTransient(typeof(IGenericRepo<>), typeof(GenericRepo<>));
         service.AddScoped<IUserBLL, UserBLL>();
+        service.AddScoped<IProductCategoryBLL, ProductCategoryBLL>();
 
         //Automapper
         service.AddAutoMapper(typeof(AutomapperProfile));
