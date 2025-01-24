@@ -72,13 +72,13 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         var dbEntity = await repo.Query(usr => usr.Id == entity.Id).FirstOrDefaultAsync();
         if (dbEntity != null)
         {
-            if (string.IsNullOrEmpty(entity.Name))
+            if (!string.IsNullOrEmpty(entity.Name))
                 dbEntity.Name = entity.Name;
 
-            if (string.IsNullOrEmpty(entity.Email))
+            if (!string.IsNullOrEmpty(entity.Email))
                 dbEntity.Email = entity.Email;
 
-            if (string.IsNullOrEmpty(entity.Password))
+            if (!string.IsNullOrEmpty(entity.Password))
             {
                 var existPassword = BCrypt.Net.BCrypt.EnhancedVerify(entity.Password, dbEntity!.Password, BCrypt.Net.HashType.SHA384);
 
