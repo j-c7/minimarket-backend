@@ -75,5 +75,4 @@ public class SaleBLL(ISaleRepo repo, IGenericRepo<SaleDetail> saleDRepo, IMapper
 
         return Result<List<ReportDTO>>.Success(mapper.Map<List<ReportDTO>>(list));
     }
-
 }

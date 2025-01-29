@@ -42,5 +42,4 @@ public class GenericRepo<T>(MinimarketdbContext context) : IGenericRepo<T> where
         (filter is not null) ? context.Set<T>().Where(filter) : context.Set<T>();
     
     public async Task SaveChangesAsync() => await context.SaveChangesAsync();
-    
 }

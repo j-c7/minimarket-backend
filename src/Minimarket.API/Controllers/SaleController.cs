@@ -19,5 +19,4 @@ public class SaleController(ISaleBLL saleBLL) : Controller
     [HttpGet("Report")]
     public async Task<IActionResult> Report(string startDate, string endDate) =>
         Ok(await saleBLL.Report(startDate, endDate));
-
 }

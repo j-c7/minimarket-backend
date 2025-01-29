@@ -27,5 +27,4 @@ public class ProductController(IProductBLL productBLL) : Controller
     [HttpGet("ProductList/{seach:alpha?}")]
     public async Task<IActionResult> ProductList(string category="all", string seach="all") =>
         Ok(await productBLL.ProductList(category, seach));
-
 }

@@ -13,8 +13,8 @@ public class ProductBLL(IGenericRepo<Product> repo, IGenericRepo<ProductCategory
     {
         var checkCategory = await crepo.Query(c => c.Id == 2).FirstOrDefaultAsync();
         if (checkCategory == null)
-            return Result<Product>.Failure(
-                ["La categoría no existe",
+            return Result<Product>.Failure([
+                "La categoría no existe",
                 "Cree una nueva categoría o verifique que introdujo el Id correcto!"
             ]);
 
@@ -49,9 +49,9 @@ public class ProductBLL(IGenericRepo<Product> repo, IGenericRepo<ProductCategory
         {
             var checkCategory = await crepo.Query(c => c.Id == entity.CategoryId).AnyAsync();
             if (!checkCategory)
-                return Result<Product>.Failure(
-                    ["La categoría no existe",
-                "Cree una nueva categoría o verifique que introdujo el Id correcto!"
+                return Result<Product>.Failure([
+                    "La categoría no existe",
+                    "Cree una nueva categoría o verifique que introdujo el Id correcto!"
                 ]);
         }
 
@@ -78,7 +78,6 @@ public class ProductBLL(IGenericRepo<Product> repo, IGenericRepo<ProductCategory
                 return Result<Product>.Failure(editedProduct.Errors);
 
             return Result<Product>.Success(editedProduct.Value!);
-
         }
         return Result<Product>.Failure(["Producto no encontrado"]);
     }
