@@ -12,6 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Minimarket.BLL.Products.Interfaces;
 using Minimarket.BLL.Products;
+using Minimarket.BLL.Sales.Interfaces;
+using Minimarket.BLL.Sales;
 
 namespace Minimarket.IOC;
 
@@ -26,9 +28,11 @@ public static class MinimarketIOC
 
         // Inyección de dependencias.
         service.AddTransient(typeof(IGenericRepo<>), typeof(GenericRepo<>));
+        service.AddScoped<ISaleRepo, SaleRepo>();
         service.AddScoped<IUserBLL, UserBLL>();
         service.AddScoped<IProductCategoryBLL, ProductCategoryBLL>();
         service.AddScoped<IProductBLL, ProductBLL>();
+        service.AddScoped<ISaleBLL, SaleBLL>();
 
         //Automapper
         service.AddAutoMapper(typeof(AutomapperProfile));

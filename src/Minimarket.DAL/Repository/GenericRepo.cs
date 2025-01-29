@@ -38,7 +38,7 @@ public class GenericRepo<T>(MinimarketdbContext context) : IGenericRepo<T> where
         return Result<T>.Success(entity);
     }
 
-    public IQueryable<T> Query(Expression<Func<T, bool>>? filter) => 
+    public IQueryable<T> Query(Expression<Func<T, bool>>? filter = null) => 
         (filter is not null) ? context.Set<T>().Where(filter) : context.Set<T>();
     
     public async Task SaveChangesAsync() => await context.SaveChangesAsync();

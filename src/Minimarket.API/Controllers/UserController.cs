@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Minimarket.BLL.User.Interfaces;
 using Minimarket.DTO.User;

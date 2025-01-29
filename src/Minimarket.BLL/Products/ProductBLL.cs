@@ -90,8 +90,7 @@ public class ProductBLL(IGenericRepo<Product> repo, IGenericRepo<ProductCategory
            : Result<ResProductDTO>.Failure(["Producto no encontrado"]);
     }
 
-    /// Obtiene todos los productos sin importar la categoría, 
-    /// podría mejorarse añadiendo filtro de categoría.
+    /// Obtiene todos los productos sin importar la categoría.
     public async Task<Result<List<ResProductDTO>>> ProductList(string category, string seach)
     {
         category = category.ToLower();

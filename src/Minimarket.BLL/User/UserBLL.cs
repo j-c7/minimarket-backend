@@ -130,6 +130,8 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         return Result<List<ResponseUserDTO>>.Success(resList);
     }
 
+
+    // TODO: Añadir refresh token para mayor seguridad.
     public async Task<Result<SessionDTO>> Auth(LoginDTO entity)
     {
         var usrDB = await repo.Query(u => u.Email == entity.Email).FirstOrDefaultAsync();
