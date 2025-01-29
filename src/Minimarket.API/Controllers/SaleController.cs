@@ -8,12 +8,16 @@ namespace Minimarket.API.Controllers;
 [Route("api/[controller]")]
 public class SaleController(ISaleBLL saleBLL) : Controller
 {
-    [HttpPost]
+    [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] SaleDTO entity) =>
         Ok(await saleBLL.Register(entity));
 
-    [HttpGet]
+    [HttpGet("SaleHistory")]
     public async Task<IActionResult> SaleHistory(string seach, string saleNumber = "NA", string startDate = "NA", string endDate = "NA") =>
         Ok(await saleBLL.History(seach, saleNumber, startDate, endDate));
+
+    [HttpGet("Report")]
+    public async Task<IActionResult> Report(string startDate, string endDate) =>
+        Ok(await saleBLL.Report(startDate, endDate));
 
 }

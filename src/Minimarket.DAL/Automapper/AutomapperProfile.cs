@@ -79,5 +79,22 @@ public class AutomapperProfile : Profile
             d => d.Total, opt => opt.MapFrom(origin =>
                 Convert.ToDecimal(origin.TotalText, CultureInfo.InvariantCulture))
         );
+
+        // Sale Report.
+        CreateMap<SaleDetail, ReportDTO>()
+        //.ForMember(d => d.RegisterDate,
+        //    opt => opt.MapFrom(origin => origin.IdSaleNavigation!.RegisterDate!.Value.ToString("d/M/yyyy", new CultureInfo("es-ES"))))
+        .ForMember(d => d.DocumentNumber,
+            opt => opt.MapFrom(origin => origin.IdSaleNavigation!.DocumentNumber))
+        .ForMember(d => d.PaidType,
+            opt => opt.MapFrom(origin => origin.IdSaleNavigation!.PaidType))
+        .ForMember(d => d.SaleTotal,
+            opt => opt.MapFrom(origin => Convert.ToString(origin.IdSaleNavigation!.Total!.Value, CultureInfo.InvariantCulture)))
+        .ForMember(d => d.Product,
+            opt => opt.MapFrom(origin => origin.IdProductNavigation!.Name))
+        .ForMember(d => d.Price,
+            opt => opt.MapFrom(origin => Convert.ToString(origin.Price!.Value, CultureInfo.InvariantCulture)))
+        .ForMember(d => d.Total,
+            opt => opt.MapFrom(origin => Convert.ToString(origin.Total!.Value, CultureInfo.InvariantCulture)));
     }
 }
