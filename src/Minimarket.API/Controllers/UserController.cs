@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Minimarket.BLL.User.Interfaces;
 using Minimarket.DTO.User;
@@ -12,18 +13,22 @@ public class UserController(IUserBLL userBLL) : Controller
     public async Task<IActionResult> Create([FromBody] UserProfileDTO entity) =>
         Ok(await userBLL.Create(entity));
 
+    [Authorize]
     [HttpDelete("Delete/{id:int}")]
     public async Task<IActionResult> Delete(int id) =>
         Ok(await userBLL.Delete(id));
 
+    [Authorize]
     [HttpPatch("Edit")]
     public async Task<IActionResult> Edit([FromBody] EditUserProfileDTO entity) =>
         Ok(await userBLL.Edit(entity));
 
+    [Authorize]
     [HttpGet("GetUser/{id:int}")]
     public async Task<IActionResult> GetUser(int id) =>
         Ok(await userBLL.GetUser(id));
 
+    [Authorize]
     [HttpGet("UserList/{role:alpha}/{seach:alpha?}")]
     public async Task<IActionResult> UserList(string role, string seach) =>
         Ok(await userBLL.UserList(role, seach));
@@ -32,6 +37,7 @@ public class UserController(IUserBLL userBLL) : Controller
     public async Task<IActionResult> Login([FromBody] LoginDTO entity) =>
         Ok(await userBLL.Auth(entity));
 
+    [Authorize]
     [HttpGet("Profile")]
     public async Task<IActionResult> Profile()
     {
