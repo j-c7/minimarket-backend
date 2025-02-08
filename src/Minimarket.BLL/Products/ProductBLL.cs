@@ -11,7 +11,7 @@ public class ProductBLL(IGenericRepo<Product> repo, IGenericRepo<ProductCategory
 {
     public async Task<Result<Product>> Create(ProductDTO entity)
     {
-        var checkCategory = await crepo.Query(c => c.Id == 2).FirstOrDefaultAsync();
+        var checkCategory = await crepo.Query(c => c.Id == entity.CategoryId).FirstOrDefaultAsync();
         if (checkCategory == null)
             return Result<Product>.Failure([
                 "La categoría no existe",
