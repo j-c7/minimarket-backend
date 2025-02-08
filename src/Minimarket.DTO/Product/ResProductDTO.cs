@@ -17,7 +17,4 @@ public class ResProductDTO
     public string? ImageUrl { get; set; }
 
     public DateTime? RegisterDate { get; set; }
-
-    // ¿Aquí podemos devolver un DTO?
-    // public virtual ICollection<SaleDetail> SaleDetails { get; set; } = new List<SaleDetail>();
 }

@@ -19,7 +19,6 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
     {
         // TODO: Añadir comprobación de formato para correo electrónico.
 
-        // Comprobamos que el rol exista.
         if (!(entity.Role == UserRoles.Admin || entity.Role == UserRoles.Employee))
         {
             return Result<ResponseUserDTO>.Failure(
@@ -27,17 +26,13 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
             );
         }
 
-        // Comprobamos si el correo electrónico existe.
         var checkEmail = repo.Query(usr => usr.Email == entity.Email).Any();
         if (checkEmail)
         {
             return Result<ResponseUserDTO>.Failure(["El correo electronico ya existe"]);
         }
 
-        // Creamos el nuevo modelo que introduciremos en la base de datos.
         var neoEntity = mapper.Map<UserProfile>(entity);
-
-        // Encriptamos la contraseña.
         neoEntity.Password = HashPassword(entity.Password!);
 
         var createdModel = await repo.Create(neoEntity);
@@ -52,7 +47,6 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
 
     public async Task<Result<ResponseUserDTO>> Delete(int id)
     {
-        // Comprobamos que el Id del usuario existe.
         var entity = await repo.Query(usr => usr.Id == id).FirstOrDefaultAsync();
         if (entity == null)
         {
@@ -68,7 +62,6 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
 
     public async Task<Result<ResponseUserDTO>> Edit(EditUserProfileDTO entity)
     {
-        // Comprobamos que el Id del usuario existe.
         var dbEntity = await repo.Query(usr => usr.Id == entity.Id).FirstOrDefaultAsync();
         if (dbEntity != null)
         {
@@ -130,7 +123,6 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         return Result<List<ResponseUserDTO>>.Success(resList);
     }
 
-
     // TODO: Añadir refresh token para mayor seguridad.
     public async Task<Result<SessionDTO>> Auth(LoginDTO entity)
     {
@@ -153,7 +145,6 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, EpochTime.GetIntDate(now).ToString(), ClaimValueTypes.Integer64),
             new Claim("Id", usrDB.Id.ToString())
-            // Podemos guardar el rol aquí.
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt!));

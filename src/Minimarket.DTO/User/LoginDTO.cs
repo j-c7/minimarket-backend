@@ -21,5 +21,4 @@ public class LoginDTO
         get => _password;
         set => _password = value!.Trim();
     }
-
 }
