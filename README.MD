@@ -14,6 +14,6 @@
 > - [x] Rol de admininstrador y empleado.
 > - [x] Crear, Editar, Borrar, Obtener, Listar Productos.
 > - [x] Obtener reportes
-> - [ ] Obtener dashboard.
+> - [x] Obtener dashboard.
 > - [ ] Refrescar JWT.
 > - [ ] Dockerizado.

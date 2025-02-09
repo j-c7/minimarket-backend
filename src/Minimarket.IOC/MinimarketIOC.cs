@@ -14,6 +14,8 @@ using Minimarket.BLL.Products.Interfaces;
 using Minimarket.BLL.Products;
 using Minimarket.BLL.Sales.Interfaces;
 using Minimarket.BLL.Sales;
+using Minimarket.BLL.Dashboard.Interfaces;
+using Minimarket.BLL.Dashboard;
 
 namespace Minimarket.IOC;
 
@@ -33,6 +35,7 @@ public static class MinimarketIOC
         service.AddScoped<IProductCategoryBLL, ProductCategoryBLL>();
         service.AddScoped<IProductBLL, ProductBLL>();
         service.AddScoped<ISaleBLL, SaleBLL>();
+        service.AddScoped<IDashboardBLL, DashboardBLL>();
 
         //Automapper
         service.AddAutoMapper(typeof(AutomapperProfile));
