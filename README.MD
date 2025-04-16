@@ -15,5 +15,3 @@
 > - [x] Crear, Editar, Borrar, Obtener, Listar Productos.
 > - [x] Obtener reportes
 > - [x] Obtener dashboard.
-> - [ ] Refrescar JWT.
-> - [ ] Dockerizado.
