@@ -21,4 +21,5 @@ public class Result<T>(bool isSuccess, T? value, IEnumerable<string> errors)
 
     public static Result<T> Success(T value) => new(true, value, Array.Empty<string>());
     public static Result<T> Failure(IEnumerable<string> errors) => new(false, default, errors);
+    public static Result<T> Failure(T value, IEnumerable<string> errors) => new(false, value, errors);
 }

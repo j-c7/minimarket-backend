@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +14,7 @@ using Minimarket.Entity;
 
 namespace Minimarket.BLL.User;
 
-public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfiguration config) : IUserBLL
+public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfiguration config, IWebHostEnvironment enviro) : IUserBLL
 {
     public async Task<Result<ResponseUserDTO>> Create(UserProfileDTO entity)
     {
@@ -52,6 +53,8 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         {
             return Result<ResponseUserDTO>.Failure(["Usuario no encontrado"]);
         }
+
+        var deleteProfileImage = await DeleteProfileImage(entity);
 
         var deletedEntity = await repo.Delete(entity);
         if (!deletedEntity.IsSucess)
@@ -180,5 +183,67 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
             return Result<ResponseUserDTO>.Failure(["Id de usuario no encontrado"]);
 
         return Result<ResponseUserDTO>.Success(mapper.Map<ResponseUserDTO>(usr));
+    }
+
+    public async Task<Result<string>> UploadProfileImage(IFormFile upload, HttpContext context)
+    {
+        var fileExtension = Path.GetExtension(upload.FileName);
+        if (!(fileExtension == ".jpg" || fileExtension == ".png" || fileExtension == ".webp"))
+        {
+            return Result<string>.Failure(["Solo se admiten archivos .png, .jpg y .webp"]);
+        }
+
+        var user = await repo.Query(p => p.Id == GetUserByClaims(context)).FirstOrDefaultAsync();
+        var f = upload!.FileName.Replace(fileExtension, "");
+        var folder = "Images/Profile/" + f + Guid.NewGuid().ToString() + fileExtension;
+
+        var fileName = System.IO.Path.Combine(enviro.ContentRootPath,
+            folder
+        );
+
+        user!.ImageUrl = folder;
+        var res = await repo.Edit(user);
+        if (!res.IsSucess)
+        {
+            return Result<string>.Failure(["No se pudo guardar la url de la imagen en la base de datos"]);
+        }
+
+        await upload.CopyToAsync(
+            new System.IO.FileStream(fileName, System.IO.FileMode.Create)
+        );
+
+        return Result<string>.Success(folder);
+    }
+
+    public async Task<Result<bool>> DeleteProfileImage(UserProfile user)
+    {
+        if (user!.ImageUrl == "" || user!.ImageUrl is null)
+        {
+            return Result<bool>.Failure(false, ["Url de la imagen no encontrada"]);
+        }
+
+        var fileName = System.IO.Path.Combine(enviro.ContentRootPath,
+                user!.ImageUrl!
+        );
+
+        if (File.Exists(fileName))
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            File.Delete(fileName);
+        }
+        else
+        {
+            return Result<bool>.Failure(false, ["Imagen no encontrada"]);
+        }
+        user.ImageUrl = "";
+
+        var res = await repo.Edit(user);
+        if(!res.IsSucess)
+        {
+            Result<bool>.Failure(false, ["No se pudo guardar url de la imagen en la base de datos"]);
+        }
+
+        return Result<bool>.Success(res.IsSucess);
     }
 }
