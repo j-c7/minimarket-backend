@@ -20,4 +20,8 @@ public interface IUserBLL
     Task<Result<SessionDTO>> Auth(LoginDTO entity);
 
     Task<Result<ResponseUserDTO>> Profile(HttpContext context);
+
+    Task<Result<string>> UploadProfileImage(IFormFile upload, HttpContext context);
+
+    Task<Result<bool>> DeleteProfileImage(HttpContext context);
 }

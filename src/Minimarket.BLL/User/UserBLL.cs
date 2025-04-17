@@ -215,7 +215,18 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         return Result<string>.Success(folder);
     }
 
-    public async Task<Result<bool>> DeleteProfileImage(UserProfile user)
+    // By Claims.
+    public async Task<Result<bool>> DeleteProfileImage(HttpContext context)
+    {
+        var user = await repo.Query(p => p.Id == GetUserByClaims(context)).FirstOrDefaultAsync();
+        if (user is null)
+        {
+            return Result<bool>.Failure(false, ["Usuario no encontrado"]);
+        }
+        return await DeleteProfileImage(user);
+    }
+
+    private async Task<Result<bool>> DeleteProfileImage(UserProfile user)
     {
         if (user!.ImageUrl == "" || user!.ImageUrl is null)
         {
@@ -239,7 +250,7 @@ public class UserBLL(IGenericRepo<UserProfile> repo, IMapper mapper, IConfigurat
         user.ImageUrl = "";
 
         var res = await repo.Edit(user);
-        if(!res.IsSucess)
+        if (!res.IsSucess)
         {
             Result<bool>.Failure(false, ["No se pudo guardar url de la imagen en la base de datos"]);
         }

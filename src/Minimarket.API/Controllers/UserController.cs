@@ -44,4 +44,25 @@ public class UserController(IUserBLL userBLL) : Controller
         var context = HttpContext;
         return Ok(await userBLL.Profile(context));
     }
+
+    [Authorize]
+    [RequestFormLimits(MultipartBodyLengthLimit = 2000000)]
+    [HttpPost("UploadProfileImage")]
+    public async Task<IActionResult> UploadProfileImage(IFormFile image)
+    {
+        var context = HttpContext;
+        return Ok(
+            await userBLL.UploadProfileImage(image, context)
+        );
+    }
+
+    [Authorize]
+    [HttpDelete("DeleteProfileImage")]
+    public async Task<IActionResult> DeleteProfileImage()
+    {
+        var context = HttpContext;
+        return Ok(
+            await userBLL.DeleteProfileImage(context)
+        );
+    }
 }
