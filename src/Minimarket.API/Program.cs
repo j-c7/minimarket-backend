@@ -1,3 +1,4 @@
+using Microsoft.Extensions.FileProviders;
 using Minimarket.IOC;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +35,14 @@ if (app.Environment.IsDevelopment())
 app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Images")
+    ),
+    RequestPath = "/Images"
+});
 
 app.UseAuthorization();
 
